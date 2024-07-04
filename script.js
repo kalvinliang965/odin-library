@@ -11,6 +11,8 @@ const myForm = document.querySelector("form");
 const cancelBtn = document.getElementById("cancelBtn");
 const container = document.querySelector(".container");
 
+let book_id = 0;
+
 showButton.addEventListener("click", ()=>{
     dialog.showModal();
 });
@@ -28,7 +30,7 @@ confirmBtn.addEventListener("click", (event) => {
                 ? true
                 : false;
         new_book = new Book(bookName.value, authorName.value,
-                    numPages.value, read)
+                    numPages.value, read, book_id++);
         addBookToLibrary(myLibrary, new_book);
         myForm.reset();
         dialog.close();
@@ -42,23 +44,70 @@ function validate() {
             selectEl.validity.valid;
 }
 
-function Book(bookName, author, numPages, read) {
+function Book(bookName, author, numPages, read, id) {
     // the constructor...
     this.bookName = bookName;
     this.author = author;
     this.numPages = numPages;
     this.read = read;
+    this.id = id;
+}
+
+function book_equal(b1, b2) {
+    return b1.bookName === b2.bookName &&
+            b1.author === b2.author &&
+            b1.numPages === b2.numPages;
 }
 
 function addBookToLibrary(book_list, new_book) {
-    book_list.push(new_book);
     new_card = construct_card(new_book);
     container.insertBefore(new_card, container.lastElementChild);
+    book_list.push(new_book);
+}
+
+function deleteBookFromLibrary(book_list, book_id) {
+    if (book_id < 0) {
+        alert(`Invalid index input to deleteBookFromLibrary(); index: ${book_id}`);
+    }
+    
+    let child = null;
+    for (let c of container.children) {
+        if (c.id === book_id) {
+            child = c;
+            break;
+        }
+    }
+
+    let index = -1;
+    for (let i = 0; i < myLibrary.length; i++) {
+        if (myLibrary[i].id === parseInt(book_id)) {
+            index = i;
+            break;
+        }
+    }
+
+    if (child === null || index === -1) {
+        alert(`id: ${book_id}`);
+        console.log(`child: ${child}`);
+        console.log(`index: ${index}`);
+    } else {
+
+        console.log("TEST");
+        console.log(`i: ${index}`);
+        // remove from dom
+        container.removeChild(child);
+        // remove from list
+        
+        book_list.splice(index, 1);
+        
+    }
 }
 
 function construct_card(new_book) {
     const div = document.createElement("div");
     div.classList.add("card");
+    div.id = new_book.id;
+    console.log(`new id is ${div.id}`);
 
     // create the svg img
     const img = document.createElement("img");
@@ -98,7 +147,14 @@ function construct_card(new_book) {
     
     const delete_btn = document.createElement("button");
     delete_btn.classList.add("delete-button");
-    // delete_btn.addEventListener("click", deleteBook);
+    delete_btn.addEventListener("click", (event) =>{
+        console.log("delete_Btn is clicked");
+        grandparent = event.currentTarget.parentElement.parentElement;
+        console.log(grandparent)
+    
+        deleteBookFromLibrary(myLibrary, grandparent.id);
+    });
+
     const delete_img = document.createElement("img");
     delete_img.src="./icons/delete-circle-outline.svg";
     delete_img.alt="delete icon";
