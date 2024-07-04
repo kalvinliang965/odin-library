@@ -29,7 +29,7 @@ confirmBtn.addEventListener("click", (event) => {
                 : false;
         new_book = new Book(bookName.value, authorName.value,
                     numPages.value, read)
-        appendBook(myLibrary, new_book);
+        addBookToLibrary(myLibrary, new_book);
         myForm.reset();
         dialog.close();
     }
@@ -50,35 +50,12 @@ function Book(bookName, author, numPages, read) {
     this.read = read;
 }
 
-function appendBook(book_list, new_book) {
-    book_list.unshift(new_book);
+function addBookToLibrary(book_list, new_book) {
+    book_list.push(new_book);
     new_card = construct_card(new_book);
-    
+    container.insertBefore(new_card, container.lastElementChild);
 }
 
-
-
-
-
-/* <div class="card">
-            <img src="./icons/book.svg" alt="book icon" class="book-icon">
-
-            <div class="card-text">
-                <p>The Great Gatsby</p>
-                <p>F. Scott Fitzgerald</p>
-                <p>80</p>
-            </div>
-
-            <div class="card-last-item">
-                <div class="book-status">
-                    Read
-                </div>
-
-                <button class="delete-button">
-                    <img src="./icons/delete-circle-outline.svg" alt="delete icon">
-                </button>
-            </div>
-        </div> */
 function construct_card(new_book) {
     const div = document.createElement("div");
     div.classList.add("card");
@@ -121,6 +98,7 @@ function construct_card(new_book) {
     
     const delete_btn = document.createElement("button");
     delete_btn.classList.add("delete-button");
+    // delete_btn.addEventListener("click", deleteBook);
     const delete_img = document.createElement("img");
     delete_img.src="./icons/delete-circle-outline.svg";
     delete_img.alt="delete icon";
@@ -134,9 +112,5 @@ function construct_card(new_book) {
     div.appendChild(img);
     div.appendChild(inner_div);
     div.appendChild(card_last_item);
-    container.insertBefore(div, container.firstChild);
-}
-
-function addBookToLibrary() {
-    // do stuff here
+    return div;
 }
